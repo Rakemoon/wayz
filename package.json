@@ -2,6 +2,7 @@
   "name": "wayz",
   "module": "index.ts",
   "type": "module",
+  "license": "GPL-3.0",
   "imports": {
     "#wayz/lib/components/*": "./src/lib/components/*.js",
     "#wayz/lib/structures/*": "./src/lib/structures/*.js"
