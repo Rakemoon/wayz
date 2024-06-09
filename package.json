@@ -1,0 +1,15 @@
+{
+  "name": "wayz",
+  "module": "index.ts",
+  "type": "module",
+  "imports": {
+    "#wayz/lib/components/*": "./src/lib/components/*.js",
+    "#wayz/lib/structures/*": "./src/lib/structures/*.js"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
