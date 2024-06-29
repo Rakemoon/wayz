@@ -1,36 +1,33 @@
-import { opendir } from "fs/promises";
-import { join } from "path";
+import { opendir } from "node:fs/promises";
+import path from "node:path";
+import type { BuilderExtends } from "#wayz/lib/structures/ArgumentParserOption";
 import Command from "#wayz/lib/structures/Command";
 
 export default class CommandLoader {
-  public stores = new Map<string, Command<any>>;
+    public stores = new Map<string, Command<BuilderExtends[]>>();
 
-  public constructor(private directory: string) {}
-
-  public async exec() {
-    const dirs = await this.walk(this.directory);
-    return await this.openfiles(dirs);
-  }
-
-  private async openfiles(dirs: string[]) {
-    for (const dir of dirs) {
-      const imported = await import(dir.replace("src", "#wayz").replace(".ts", "").replace(/\\/g, "/"));
-      if (imported.default instanceof Command) this.stores.set(imported.default.name, imported.default);
+    #directory;
+    public constructor(directory: string) {
+        this.#directory = directory;
     }
-  }
 
-  private async walk(directory: string) {
-    const results: string[] = [];
-    const dirs = await opendir(directory);
-
-    loopdir:
-    for await (const item of dirs) {
-      switch(true) {
-        case item.isFile(): results.push(join(directory, item.name)); break;
-        case item.isDirectory(): results.push(...await this.walk(join(directory, item.name))); break;
-        default: continue loopdir;
-      }
+    public async exec() {
+        for await (const dir of this.walk(this.#directory)) await this.register(dir);
     }
-    return results;
-  }
+
+    private async register(dir: string) {
+        const imported = await import(dir.replace("src", "#wayz").replace(".ts", "").replaceAll("\\", "/"));
+        if (imported.default instanceof Command) {
+            for (const alias of imported.default.aliases) this.stores.set(alias, imported.default);
+            this.stores.set(imported.default.name, imported.default);
+        }
+    }
+
+    private async * walk(directory: string): AsyncIterableIterator<string> {
+        const dirs = await opendir(directory);
+        for await (const item of dirs) {
+            if (item.isFile()) yield path.join(directory, item.name);
+            else if (item.isDirectory()) yield * this.walk(path.join(directory, item.name));
+        }
+    }
 }
