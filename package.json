@@ -4,13 +4,37 @@
   "type": "module",
   "license": "GPL-3.0",
   "imports": {
-    "#wayz/lib/components/*": "./src/lib/components/*.js",
-    "#wayz/lib/structures/*": "./src/lib/structures/*.js"
+    "#wayz/lib/components/*": "./dist/lib/components/*.js",
+    "#wayz/lib/structures/*": "./dist/lib/structures/*.js",
+    "#wayz/commands/general/*": "./dist/commands/general/*.js"
+  },
+  "scripts": {
+    "dev": "bun run build && bun run start",
+    "start": "node ./dist",
+    "build": "tsc --build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@eslint/compat": "^1.1.0",
+    "@rakemoon/eslint-config": "^2.0.1",
+    "@stylistic/eslint-plugin": "^2.3.0",
+    "@types/bun": "^1.1.6",
+    "eslint": "^9.6.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsdoc": "^48.5.0",
+    "eslint-plugin-n": "^17.9.0",
+    "eslint-plugin-promise": "^6.2.0",
+    "eslint-plugin-tsdoc": "^0.3.0",
+    "eslint-plugin-unicorn": "^54.0.0",
+    "globals": "^15.6.0",
+    "typescript-eslint": "^7.14.1"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.5.2"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.5",
+    "qrcode-terminal": "^0.12.0"
   }
 }
