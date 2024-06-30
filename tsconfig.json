@@ -14,9 +14,9 @@
     "sourceMap": true,
 
     // export import
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "paths": {
-      "#wayz/*": ["./*.ts"]
+      "#wayz/*": ["src/*.ts"]
     }
   },
 

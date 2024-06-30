@@ -4,10 +4,7 @@
   "type": "module",
   "license": "GPL-3.0",
   "imports": {
-    "#wayz/lib/components/*": "./dist/lib/components/*.js",
-    "#wayz/lib/structures/*": "./dist/lib/structures/*.js",
-    "#wayz/languages/*": "./dist/languages/*.js",
-    "#wayz/commands/general/*": "./dist/commands/general/*.js"
+    "#wayz/*": "./dist/*.js"
   },
   "scripts": {
     "dev": "bun run build && bun run start",
