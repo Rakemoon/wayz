@@ -10,12 +10,14 @@ import {
 import MainLogger from "@whiskeysockets/baileys/lib/Utils/logger.js";
 import ArgumentParser from "#wayz/lib/components/ArgumentParser";
 import CommandLoader from "#wayz/lib/components/CommandLoader";
+import Localization from "#wayz/lib/components/Localization";
 
 const logger = MainLogger.default.child({});
 
 export async function connectToWhatsapp() {
     const commandLoader = new CommandLoader("./src/commands");
     await commandLoader.exec();
+    const localization = new Localization();
     const { state, saveCreds } = await useMultiFileAuthState("baileys_auth_info");
     const sock = makeWASocket({
         auth: {
@@ -48,6 +50,7 @@ export async function connectToWhatsapp() {
                     const command = commandLoader.stores.get(cmd);
                     Reflect.set(msg, "sock", sock);
                     Reflect.set(msg, "content", content);
+                    Reflect.set(msg, "localize", localization.getLocalization(msg.key.remoteJid as string));
                     if (command && command.exec) {
                         const args = new ArgumentParser(rawArgs.join(" "), command.args).exec();
                         /* eslint-disable promise/prefer-await-to-then */

@@ -1,9 +1,11 @@
 import type { WAProto, makeWASocket } from "@whiskeysockets/baileys";
+import type enUs from "#wayz/languages/enUs";
 import type { BuilderExtends, Convert } from "#wayz/lib/structures/ArgumentParserOption";
 
 type Message = WAProto.IWebMessageInfo & {
     content: string;
     sock: ReturnType<typeof makeWASocket>;
+    localize: typeof enUs;
 };
 
 export default class Command<

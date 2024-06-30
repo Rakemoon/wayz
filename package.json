@@ -6,6 +6,7 @@
   "imports": {
     "#wayz/lib/components/*": "./dist/lib/components/*.js",
     "#wayz/lib/structures/*": "./dist/lib/structures/*.js",
+    "#wayz/languages/*": "./dist/languages/*.js",
     "#wayz/commands/general/*": "./dist/commands/general/*.js"
   },
   "scripts": {
