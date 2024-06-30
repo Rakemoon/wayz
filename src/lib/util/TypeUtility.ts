@@ -14,7 +14,7 @@ export type UnionToTuple<T, Last = LastInUnion<T>>
       : [...UnionToTuple<Exclude<T, Last>>, Last];
 
 export type ArrayIndex<T extends unknown[], Result extends number = 0>
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line typescript/no-unused-vars
   = T extends [infer _, ...infer R]
-      ? ArrayIndex<R, Result | R["length"]>
+      ? ArrayIndex<R, R["length"] | Result>
       : Result;

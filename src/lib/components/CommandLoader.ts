@@ -6,20 +6,28 @@ import Command from "#wayz/lib/structures/Command";
 export default class CommandLoader {
     public stores = new Map<string, Command<BuilderExtends[]>>();
 
-    #directory;
+    readonly #directory;
     public constructor(directory: string) {
         this.#directory = directory;
     }
 
-    public async exec() {
+    public async exec(): Promise<void> {
         for await (const dir of this.walk(this.#directory)) await this.register(dir);
     }
 
-    private async register(dir: string) {
-        const imported = await import(dir.replace("src", "#wayz").replace(".ts", "").replaceAll("\\", "/"));
+    private replaceDir(dir: string): string {
+        return dir
+            .replace("src", "#wayz")
+            .replace(".ts", "")
+            .replaceAll("\\", "/");
+    }
+
+    private async register(dir: string): Promise<void> {
+        const imported = await import(this.replaceDir(dir)) as { default: unknown; };
         if (imported.default instanceof Command) {
-            for (const alias of imported.default.aliases) this.stores.set(alias, imported.default);
-            this.stores.set(imported.default.name, imported.default);
+            const command = imported.default as Command;
+            for (const alias of command.aliases) this.stores.set(alias, command);
+            this.stores.set(command.name, command);
         }
     }
 

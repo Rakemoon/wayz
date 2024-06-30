@@ -1,27 +1,27 @@
 import type { TypeCollection } from "#wayz/lib/structures/ArgumentParserOption";
 
-export default class ArgumentResult {
-    #argument;
-    #type;
+export default class ArgumentResult<T extends keyof TypeCollection> {
+    readonly #argument;
+    readonly #type;
 
-    public constructor(argument: string, type: keyof TypeCollection) {
+    public constructor(argument: string, type: T) {
         this.#argument = argument;
         this.#type = type;
     }
 
-    public exec() {
+    public exec(): TypeCollection[T] {
         switch (this.#type) {
-            case "string": return this.parseString();
-            case "number": return this.parseNumber();
-            default: return "";
+            case "string": return this.parseString() as TypeCollection[T];
+            case "number": return this.parseNumber() as TypeCollection[T];
+            default: return "" as TypeCollection[T];
         }
     }
 
-    private parseString() {
+    private parseString(): string {
         return this.#argument;
     }
 
-    private parseNumber() {
+    private parseNumber(): number {
         const result = Number.parseInt(this.#argument, 10);
         if (Number.isNaN(result)) throw new TypeError("ARGS_TYPE_ISNT_MATCH");
         return result;

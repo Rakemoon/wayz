@@ -18,10 +18,11 @@
   },
   "devDependencies": {
     "@eslint/compat": "^1.1.0",
-    "@rakemoon/eslint-config": "^2.0.1",
+    "@rakemoon/eslint-config": "^2.0.2",
     "@stylistic/eslint-plugin": "^2.3.0",
     "@types/bun": "^1.1.6",
     "eslint": "^9.6.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsdoc": "^48.5.0",
     "eslint-plugin-n": "^17.9.0",

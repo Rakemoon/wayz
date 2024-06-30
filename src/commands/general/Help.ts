@@ -5,7 +5,7 @@ const helpCommand = new Command()
     .setDescription("A help commnad")
     .addAlias("h")
     .setExec(async msg => {
-        await msg.sock.sendMessage(msg.key.remoteJid as string, { text: msg.localize.commands.help });
+        await msg.sock.sendMessage(msg.key.remoteJid!, { text: msg.localize.commands.help });
     });
 
 export default helpCommand;
