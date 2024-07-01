@@ -1,4 +1,4 @@
-import type { ArrayIndex } from "#wayz/lib/util/TypeUtility";
+import type { ArrayIndex, Equal } from "#wayz/lib/util/TypeUtility";
 
 export type MatchCollection = "rest" | "single";
 
@@ -33,8 +33,10 @@ export class Builder<
         return this as unknown as Builder<Name, Type, T, Optional>;
     }
 
-    public setOptional<T extends boolean>(optional: T): Builder<Name, Type, Match, T> {
-        this.optional = optional as unknown as Optional;
+    public setOptional(): Builder<Name, Type, Match, true>;
+    public setOptional<T extends boolean>(optional: T): Builder<Name, Type, Match, T>;
+    public setOptional<T extends boolean>(optional?: T): Builder<Name, Type, Match, T> {
+        this.optional = (optional ?? true) as unknown as Optional;
         return this as unknown as Builder<Name, Type, Match, T>;
     }
 }
@@ -42,11 +44,13 @@ export class Builder<
 export type BuilderExtends = Builder<string, keyof TypeCollection, MatchCollection, boolean>;
 
 export type Convert<T extends BuilderExtends[]> = {
-
-    // @ts-expect-error 2332 this something i cant figure it out to exlude the undefined type from Builder["type"] uniones
-    [K in ArrayIndex<T> as T[K]["name"]]: T[K]["type"] extends infer U | undefined
+    [K in ArrayIndex<T> as NonNullable<T[K]["name"]>]: T[K]["type"] extends infer U | undefined
         ? U extends keyof TypeCollection
-            ? TypeCollection[U]
+            ? T[K]["optional"] extends infer O | undefined
+                ? Equal<O, true> extends true
+                    ? TypeCollection[U] | undefined
+                    : TypeCollection[U]
+                : TypeCollection[U]
             : never
         : never;
 };

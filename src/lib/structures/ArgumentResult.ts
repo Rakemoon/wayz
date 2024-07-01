@@ -9,11 +9,12 @@ export default class ArgumentResult<T extends keyof TypeCollection> {
         this.#type = type;
     }
 
-    public exec(): TypeCollection[T] {
+    public exec(): TypeCollection[T] | undefined {
+        if (this.#argument.length === 0) return undefined;
         switch (this.#type) {
             case "string": return this.parseString() as TypeCollection[T];
             case "number": return this.parseNumber() as TypeCollection[T];
-            default: return "" as TypeCollection[T];
+            default: return undefined;
         }
     }
 

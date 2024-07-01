@@ -22,7 +22,9 @@ export default class ArgumentParser<T extends BuilderExtends[]> {
                 case "single": arg.push(args.shift()!); break;
                 default: break;
             }
-            results[payload.name!] = new ArgumentResult(arg.join(" "), payload.type!).exec();
+            const result = new ArgumentResult(arg.join(" "), payload.type!).exec();
+            if (result === undefined && !payload.optional!) throw new Error("ARGS_LESS");
+            results[payload.name!] = result;
         }
         return results as Convert<T extends (infer U)[] ? UnionToTuple<U> : never>;
     }

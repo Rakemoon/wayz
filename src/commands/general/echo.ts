@@ -1,19 +1,13 @@
-import { Builder } from "#wayz/lib/structures/ArgumentParserOption";
 import Command from "#wayz/lib/structures/Command";
 
-const firstArg = new Builder()
+export default new Command()
     .setName("echo")
-    .setType("string")
-    .setMatch("rest");
-
-const sayCommand = new Command()
-    .setName("echo")
-    .setDescription("A command to make you say wow")
-    .addAlias("e")
-    .addAlias("say")
-    .addArgument(firstArg)
-    .setExec(async (msg, { echo }) => {
-        await msg.sock.sendMessage(msg.key.remoteJid!, { text: echo });
+    .setDescription(msg => msg.localize.commands.echo.description)
+    .addAlias("e", "say")
+    .addArgument(build => build
+        .setName("text")
+        .setType("string")
+        .setMatch("rest"))
+    .setExec(async (msg, { text }) => {
+        await msg.client.sock?.sendMessage(msg.key.remoteJid!, { text });
     });
-
-export default sayCommand;

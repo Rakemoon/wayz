@@ -1,10 +1,13 @@
-import type { WAProto, makeWASocket } from "@whiskeysockets/baileys";
+import type { WAProto } from "@whiskeysockets/baileys";
 import type enUs from "#wayz/languages/enUs";
+import ArgumentParser from "#wayz/lib/components/ArgumentParser";
+import { Builder } from "#wayz/lib/structures/ArgumentParserOption";
 import type { BuilderExtends, Convert } from "#wayz/lib/structures/ArgumentParserOption";
+import type Client from "#wayz/lib/structures/Client";
 
 type Message = WAProto.IWebMessageInfo & {
     content: string;
-    sock: ReturnType<typeof makeWASocket>;
+    client: Client;
     localize: typeof enUs;
 };
 
@@ -13,7 +16,7 @@ export default class Command<
 > {
     public name: string = "";
     public aliases: string[] = [];
-    public description: string = "";
+    public description: string | ((msg: Message) => string) = "";
     public args: Argument = [] as unknown as Argument;
 
     #exec: (...args: unknown[]) => Promise<unknown> = async function error() {
@@ -21,14 +24,15 @@ export default class Command<
         throw new ReferenceError(".setExec must be used");
     };
 
-    public async exec(...args: unknown[]): Promise<void> {
+    public async exec(ms: unknown, rawArgs: string): Promise<void> {
         try {
-            await this.#exec(...args);
+            const args = new ArgumentParser(rawArgs, this.args).exec();
+            await this.#exec(ms, args);
         } catch (error) {
             if (error instanceof Error) {
-                const msg = args[0] as Message;
-                void msg.sock.sendMessage(msg.key.remoteJid!, { text: error.message });
-                console.error(error);
+                const msg = ms as Message;
+                void msg.client.sock?.sendMessage(msg.key.remoteJid!, { text: error.message });
+                msg.client.sock?.logger.error(error);
             }
         }
     }
@@ -38,20 +42,21 @@ export default class Command<
         return this;
     }
 
-    public setDescription(description: string): this {
+    public setDescription(description: string | ((msg: Message) => string)): this {
         this.description = description;
         return this;
     }
 
-    public addAlias(alias: string): this {
-        this.aliases.push(alias);
+    public addAlias(...aliases: string[] | string[][]): this {
+        this.aliases.push(...aliases.flat(2));
         return this;
     }
 
-    public addArgument<T extends BuilderExtends>(build: T): Command<[...Argument, T]> {
-        this.args.push(build);
-        return this as unknown as Command<[...Argument, T]>;
-    }
+    public addArgument: <R extends BuilderExtends> (arg: R | ((build: BuilderExtends) => R)) => Command<[...Argument, R]> = arg => {
+        this.args.push(arg instanceof Builder ? arg : arg(new Builder()));
+        // eslint-disable-next-line typescript/no-unsafe-return
+        return this as any;
+    };
 
     // eslint-disable-next-line promise/prefer-await-to-callbacks
     public setExec(callback: (msg: Message, args: Convert<Argument>) => Promise<unknown>): this {

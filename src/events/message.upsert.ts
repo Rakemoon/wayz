@@ -1,6 +1,5 @@
 import type { WAProto } from "@whiskeysockets/baileys";
 import { getContentType } from "@whiskeysockets/baileys";
-import ArgumentParser from "#wayz/lib/components/ArgumentParser";
 import Event from "#wayz/lib/structures/Event";
 
 export default new Event("messages.upsert")
@@ -13,13 +12,10 @@ export default new Event("messages.upsert")
                     content = content.slice(1);
                     const [cmd, ...rawArgs] = content.split(" ");
                     const command = client.commandLoader.stores.get(cmd);
-                    Reflect.set(msg, "sock", client.sock);
+                    Reflect.set(msg, "client", client);
                     Reflect.set(msg, "content", content);
                     Reflect.set(msg, "localize", client.localization.getLocalization(msg.key.remoteJid!));
-                    if (command?.exec) {
-                        const args = new ArgumentParser(rawArgs.join(" "), command.args).exec();
-                        void command.exec(msg as unknown, args);
-                    }
+                    if (command?.exec) void command.exec(msg as unknown, rawArgs.join(" "));
                 }
             }
         }
