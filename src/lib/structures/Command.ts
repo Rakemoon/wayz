@@ -52,11 +52,10 @@ export default class Command<
         return this;
     }
 
-    public addArgument: <R extends BuilderExtends> (arg: R | ((build: BuilderExtends) => R)) => Command<[...Argument, R]> = arg => {
+    public addArgument <R extends BuilderExtends>(arg: R | ((build: BuilderExtends) => R)): Command<[...Argument, R]> {
         this.args.push(arg instanceof Builder ? arg : arg(new Builder()));
-        // eslint-disable-next-line typescript/no-unsafe-return
-        return this as any;
-    };
+        return this as unknown as Command<[...Argument, R]>;
+    }
 
     // eslint-disable-next-line promise/prefer-await-to-callbacks
     public setExec(callback: (msg: Message, args: Convert<Argument>) => Promise<unknown>): this {
