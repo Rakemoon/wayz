@@ -1,5 +1,6 @@
 import type { WAProto } from "@whiskeysockets/baileys";
 import { getContentType } from "@whiskeysockets/baileys";
+import type { Message } from "#wayz/lib/structures/Command";
 import Event from "#wayz/lib/structures/Event";
 
 export default new Event("messages.upsert")
@@ -15,7 +16,7 @@ export default new Event("messages.upsert")
                     Reflect.set(msg, "client", client);
                     Reflect.set(msg, "content", content);
                     Reflect.set(msg, "localize", client.localization.getLocalization(msg.key.remoteJid!));
-                    if (command?.exec) void command.exec(msg as unknown, rawArgs.join(" "));
+                    if (command?.exec) void command.exec(msg as Message, rawArgs.join(" "));
                 }
             }
         }

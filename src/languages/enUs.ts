@@ -10,6 +10,14 @@ const commands = {
 
                 ${commandList}
             `;
+        },
+        commandHelpOne(name: string, description: string, argument: string): string {
+            return stripIndent`
+                Command: ${name}
+                description: ${description}
+                Arguments:
+                ${argument}
+            `;
         }
     },
     echo: {

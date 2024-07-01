@@ -1,5 +1,5 @@
 export function stripIndent<T extends unknown[]>(template: TemplateStringsArray, ...values: T): string {
-    return String.raw(template, values)
+    return String.raw(template, ...values)
         .split("\n")
         .map(x => x.trim())
         .join("\n")

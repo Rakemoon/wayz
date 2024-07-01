@@ -5,7 +5,7 @@ import { Builder } from "#wayz/lib/structures/ArgumentParserOption";
 import type { BuilderExtends, Convert } from "#wayz/lib/structures/ArgumentParserOption";
 import type Client from "#wayz/lib/structures/Client";
 
-type Message = WAProto.IWebMessageInfo & {
+export type Message = WAProto.IWebMessageInfo & {
     content: string;
     client: Client;
     localize: typeof enUs;
@@ -24,13 +24,12 @@ export default class Command<
         throw new ReferenceError(".setExec must be used");
     };
 
-    public async exec(ms: unknown, rawArgs: string): Promise<void> {
+    public async exec(msg: Message, rawArgs: string): Promise<void> {
         try {
-            const args = new ArgumentParser(rawArgs, this.args).exec();
-            await this.#exec(ms, args);
+            const args = new ArgumentParser(msg, rawArgs, this.args).exec();
+            await this.#exec(msg, args);
         } catch (error) {
             if (error instanceof Error) {
-                const msg = ms as Message;
                 void msg.client.sock?.sendMessage(msg.key.remoteJid!, { text: error.message });
                 msg.client.sock?.logger.error(error);
             }

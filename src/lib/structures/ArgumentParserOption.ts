@@ -1,3 +1,4 @@
+import type Command from "#wayz/lib/structures/Command";
 import type { ArrayIndex, Equal } from "#wayz/lib/util/TypeUtility";
 
 export type MatchCollection = "rest" | "single";
@@ -5,6 +6,7 @@ export type MatchCollection = "rest" | "single";
 export type TypeCollection = {
     string: string;
     number: number;
+    command: Command<BuilderExtends[]>;
 };
 
 export class Builder<

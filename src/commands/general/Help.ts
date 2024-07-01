@@ -7,12 +7,12 @@ export default new Command()
     .addArgument(build => build
         .setName("cmd")
         .setMatch("single")
-        .setType("string")
+        .setType("command")
         .setOptional())
     .setExec(async (msg, { cmd }) => {
+        const formatDesc = (desc: Command["description"]): string => (typeof desc === "function" ? desc(msg) : desc);
         if (cmd === undefined) {
             const commmands = msg.client.commandLoader.stores.values();
-            const formatDesc = (desc: Command["description"]): string => (typeof desc === "function" ? desc(msg) : desc);
             const visited = new Set<string>();
             let formated: string | undefined;
             for (const command of commmands) {
@@ -25,6 +25,8 @@ export default new Command()
             const text = msg.localize.commands.help.commandHelpAll(formated!);
             await msg.client.sock?.sendMessage(msg.key.remoteJid!, { text });
         } else {
-            await msg.client.sock?.sendMessage(msg.key.remoteJid!, { text: `comming soon! ${cmd} ${cmd.length}` });
+            const args = cmd.args.map(x => `- ${(x.optional! ? "[x]" : "<x>").replace("x", `*${x.name}*`)} => ${x.type}`).join("\n");
+            const text = msg.localize.commands.help.commandHelpOne(cmd.name, formatDesc(cmd.description), args);
+            await msg.client.sock?.sendMessage(msg.key.remoteJid!, { text });
         }
     });

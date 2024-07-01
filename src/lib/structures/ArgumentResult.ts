@@ -1,12 +1,16 @@
-import type { TypeCollection } from "#wayz/lib/structures/ArgumentParserOption";
+import type { BuilderExtends, TypeCollection } from "#wayz/lib/structures/ArgumentParserOption";
+import type { Message } from "#wayz/lib/structures/Command";
+import type Command from "#wayz/lib/structures/Command";
 
 export default class ArgumentResult<T extends keyof TypeCollection> {
     readonly #argument;
     readonly #type;
+    readonly #message;
 
-    public constructor(argument: string, type: T) {
+    public constructor(msg: Message, argument: string, type: T) {
         this.#argument = argument;
         this.#type = type;
+        this.#message = msg;
     }
 
     public exec(): TypeCollection[T] | undefined {
@@ -14,6 +18,7 @@ export default class ArgumentResult<T extends keyof TypeCollection> {
         switch (this.#type) {
             case "string": return this.parseString() as TypeCollection[T];
             case "number": return this.parseNumber() as TypeCollection[T];
+            case "command": return this.parseCommand() as TypeCollection[T];
             default: return undefined;
         }
     }
@@ -26,5 +31,11 @@ export default class ArgumentResult<T extends keyof TypeCollection> {
         const result = Number.parseInt(this.#argument, 10);
         if (Number.isNaN(result)) throw new TypeError("ARGS_TYPE_ISNT_MATCH");
         return result;
+    }
+
+    private parseCommand(): Command<BuilderExtends[]> {
+        const command = this.#message.client.commandLoader.stores.get(this.#argument);
+        if (!command) throw new Error("COMMAND_NOT_FOUND");
+        return command;
     }
 }
