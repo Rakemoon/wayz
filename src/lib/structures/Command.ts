@@ -4,6 +4,7 @@ import ArgumentParser from "#wayz/lib/components/ArgumentParser";
 import { Builder } from "#wayz/lib/structures/ArgumentParserOption";
 import type { BuilderExtends, Convert } from "#wayz/lib/structures/ArgumentParserOption";
 import type Client from "#wayz/lib/structures/Client";
+import type { UnionToTuple } from "#wayz/lib/util/TypeUtility";
 
 export type Message = WAProto.IWebMessageInfo & {
     content: string;
@@ -11,9 +12,28 @@ export type Message = WAProto.IWebMessageInfo & {
     localize: typeof enUs;
 };
 
-export default class Command<
-    Argument extends BuilderExtends[] = []
-> {
+type BuilderCallback = (build: BuilderExtends) => BuilderExtends;
+type AddArgumentUnion = (BuilderCallback | BuilderExtends)[] | BuilderCallback | BuilderExtends;
+type MapCallBackBuilder<Arr extends AddArgumentUnion[], Result extends BuilderExtends[] = []> =
+    Arr extends [infer First, ...infer Rest]
+        ? Rest extends AddArgumentUnion[]
+            ? First extends (build: BuilderExtends) => infer Return
+                ? Return extends BuilderExtends
+                    ? MapCallBackBuilder<Rest, [...Result, Return]>
+                    : never
+                : First extends BuilderExtends
+                    ? MapCallBackBuilder<Rest, [...Result, First]>
+                    : First extends (infer InsideUnion)[]
+                        ? UnionToTuple<InsideUnion> extends [...infer Insides]
+                            ? Insides extends (BuilderCallback | BuilderExtends)[]
+                                ? MapCallBackBuilder<[...Insides, ...Rest], [...Result]>
+                                : never
+                            : never
+                        : never
+            : never
+        : Result;
+
+export default class Command<Argument extends BuilderExtends[] = []> {
     public name: string = "";
     public aliases: string[] = [];
     public description: string | ((msg: Message) => string) = "";
@@ -51,9 +71,9 @@ export default class Command<
         return this;
     }
 
-    public addArgument <R extends BuilderExtends>(arg: R | ((build: BuilderExtends) => R)): Command<[...Argument, R]> {
-        this.args.push(arg instanceof Builder ? arg : arg(new Builder()));
-        return this as unknown as Command<[...Argument, R]>;
+    public addArgument <A extends AddArgumentUnion[]>(...args: A): Command<[...Argument, ...MapCallBackBuilder<A>]> {
+        this.args.push(...args.flat(2).map(x => (x instanceof Builder ? x : x(new Builder()))));
+        return this as unknown as Command<[...Argument, ...MapCallBackBuilder<A>]>;
     }
 
     // eslint-disable-next-line promise/prefer-await-to-callbacks
