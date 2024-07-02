@@ -27,7 +27,7 @@ export default class ArgumentParser<T extends BuilderExtends[]> {
             }
             const result = new ArgumentResult(this.#message, arg.join(" "), payload.type!).exec();
             if (result === undefined && !payload.optional!) throw new Error("ARGS_LESS");
-            results[payload.name!] = result;
+            results[payload.name!] = result ?? payload.default;
         }
         return results as Convert<T extends (infer U)[] ? UnionToTuple<U> : never>;
     }
