@@ -10,6 +10,7 @@ export type Message = WAProto.IWebMessageInfo & {
     content: string;
     client: Client;
     localize: typeof enUs;
+    prefix: string;
 };
 
 type BuilderCallback = (build: BuilderExtends) => BuilderExtends;
@@ -38,6 +39,7 @@ export default class Command<Argument extends BuilderExtends[] = []> {
     public aliases: string[] = [];
     public description: string | ((msg: Message) => string) = "";
     public args: Argument = [] as unknown as Argument;
+    public ownerOnly: boolean = false;
 
     #exec: (...args: unknown[]) => Promise<unknown> = async function error() {
         await Promise.resolve();
@@ -79,6 +81,11 @@ export default class Command<Argument extends BuilderExtends[] = []> {
     // eslint-disable-next-line promise/prefer-await-to-callbacks
     public setExec(callback: (msg: Message, args: Convert<Argument>) => Promise<unknown>): this {
         this.#exec = callback as unknown as (...args: unknown[]) => Promise<unknown>;
+        return this;
+    }
+
+    public setOwnerOnly(value = true): this {
+        this.ownerOnly = value;
         return this;
     }
 }
