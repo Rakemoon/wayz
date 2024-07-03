@@ -9,6 +9,7 @@ export default new Command()
         .setName("code")
         .setType("string")
         .setMatch("rest"))
+    .setOwnerOnly()
     .setExec(async (msg, { code }) => {
         try {
             // eslint-disable-next-line typescript/no-unsafe-assignment, no-eval
