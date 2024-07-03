@@ -1,6 +1,7 @@
 import type { BuilderExtends, TypeCollection } from "#wayz/lib/structures/ArgumentParserOption";
 import type { Message } from "#wayz/lib/structures/Command";
 import type Command from "#wayz/lib/structures/Command";
+import CustomError from "#wayz/lib/structures/CustomError";
 
 export default class ArgumentResult<T extends keyof TypeCollection> {
     readonly #argument;
@@ -29,13 +30,13 @@ export default class ArgumentResult<T extends keyof TypeCollection> {
 
     private parseNumber(): number {
         const result = Number.parseInt(this.#argument, 10);
-        if (Number.isNaN(result)) throw new TypeError("ARGS_TYPE_ISNT_MATCH");
+        if (Number.isNaN(result)) throw new CustomError("ArgsError", "ArgumentTypeNotMatch", { expected: this.#type });
         return result;
     }
 
     private parseCommand(): Command<BuilderExtends[]> {
         const command = this.#message.client.commandLoader.stores.get(this.#argument);
-        if (!command) throw new Error("COMMAND_NOT_FOUND");
+        if (!command) throw new CustomError("CollectionError", "NotFound", { from: "Command", where: this.#argument });
         return command;
     }
 }

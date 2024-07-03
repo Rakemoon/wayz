@@ -31,7 +31,26 @@ const cmdExecutor = {
     }
 };
 
+const error = {
+    argument: {
+        less(expected: number, found: number): string {
+            return `Argument is less than *${expected}*, found *${found}*`;
+        },
+
+        notmatch(type: string): string {
+            return `Argument you provided isn't match with type *${type}*`;
+        }
+    },
+
+    colllection: {
+        notFound(from: string, where: string): string {
+            return `Value *${where}* isn't found in *${from}*`;
+        }
+    }
+};
+
 export default {
     commands,
-    cmdExecutor
+    cmdExecutor,
+    error
 };

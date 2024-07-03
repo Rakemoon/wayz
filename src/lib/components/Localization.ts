@@ -2,6 +2,8 @@ import enUs from "#wayz/languages/enUs";
 
 type Langs = "enUs";
 
+export type LocalizationLibrary = typeof enUs;
+
 export default class Localization {
     #stores = new Map<string, Langs>();
     #defaultLang = "enUs";

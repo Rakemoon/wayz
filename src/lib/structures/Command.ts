@@ -1,16 +1,17 @@
 import type { WAProto } from "@whiskeysockets/baileys";
-import type enUs from "#wayz/languages/enUs";
 import ArgumentParser from "#wayz/lib/components/ArgumentParser";
+import type { LocalizationLibrary } from "#wayz/lib/components/Localization";
 import { Builder } from "#wayz/lib/structures/ArgumentParserOption";
 import type { BuilderExtends, Convert } from "#wayz/lib/structures/ArgumentParserOption";
 import type Client from "#wayz/lib/structures/Client";
 import type { UnionToTuple } from "#wayz/lib/util/TypeUtility";
 import { getParticipant } from "#wayz/lib/util/proto";
+import CustomError from "#wayz/lib/structures/CustomError";
 
 export type Message = WAProto.IWebMessageInfo & {
     content: string;
     client: Client;
-    localize: typeof enUs;
+    localize: LocalizationLibrary;
     prefix: string;
 };
 
@@ -57,8 +58,13 @@ export default class Command<Argument extends BuilderExtends[] = []> {
             const args = new ArgumentParser(msg, rawArgs, this.args).exec(this as unknown as Command);
             await this.#exec(msg, args);
         } catch (error) {
+            this.#cooldowns.delete(getParticipant(msg)!);
+            if (error instanceof CustomError) {
+                const text = error.toLocalizeString(msg.localize);
+                void msg.client.sock?.sendMessage(msg.key.remoteJid!, { text });
+            }
+
             if (error instanceof Error) {
-                this.#cooldowns.delete(getParticipant(msg)!);
                 void msg.client.sock?.sendMessage(msg.key.remoteJid!, { text: error.message });
                 msg.client.sock?.logger.error(error);
             }
