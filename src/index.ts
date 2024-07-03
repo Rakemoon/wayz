@@ -7,7 +7,7 @@ const client = new Client({
     eventsPath: "./src/events",
     commandsPath: "./src/commands",
     prefixes: ["!", "wayz"],
-    ownersPhoneNumber: [process.env.OWNER_BOT_1!],
+    ownersPhoneNumber: [process.env.BOTS_OWNER_1!],
     selfbot: true
 });
 

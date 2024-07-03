@@ -3,7 +3,7 @@ import Command from "#wayz/lib/structures/Command";
 
 export default new Command()
     .setName("eval")
-    .setDescription("Evaluate Javascript Code")
+    .setDescription(msg => msg.localize.commands.eval.description)
     .addAlias("e", "ev", "code")
     .addArgument(build => build
         .setName("code")

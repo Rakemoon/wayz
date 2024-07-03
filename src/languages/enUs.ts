@@ -22,6 +22,15 @@ const commands = {
     },
     echo: {
         description: "say back what youve sayed"
+    },
+    eval: {
+        description: "Evaluate Javascript Code"
+    },
+    language: {
+        description: "set the current language",
+        commandLanguageSet(lang: string): string {
+            return `Language set to *${lang}*`;
+        }
     }
 };
 
