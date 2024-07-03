@@ -25,6 +25,13 @@ const commands = {
     }
 };
 
+const cmdExecutor = {
+    cooldown(remain: string): string {
+        return `Please wait patiently, you can use command in ${remain}`;
+    }
+};
+
 export default {
-    commands
+    commands,
+    cmdExecutor
 };

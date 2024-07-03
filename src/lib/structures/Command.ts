@@ -5,6 +5,7 @@ import { Builder } from "#wayz/lib/structures/ArgumentParserOption";
 import type { BuilderExtends, Convert } from "#wayz/lib/structures/ArgumentParserOption";
 import type Client from "#wayz/lib/structures/Client";
 import type { UnionToTuple } from "#wayz/lib/util/TypeUtility";
+import { getParticipant } from "#wayz/lib/util/proto";
 
 export type Message = WAProto.IWebMessageInfo & {
     content: string;
@@ -40,18 +41,24 @@ export default class Command<Argument extends BuilderExtends[] = []> {
     public description: string | ((msg: Message) => string) = "";
     public args: Argument = [] as unknown as Argument;
     public ownerOnly: boolean = false;
+    public spliter: RegExp | string = " ";
+    public cooldown: number = 0;
+
+    #cooldowns = new Map<string, number>();
 
     #exec: (...args: unknown[]) => Promise<unknown> = async function error() {
         await Promise.resolve();
         throw new ReferenceError(".setExec must be used");
     };
 
-    public async exec(msg: Message, rawArgs: string): Promise<void> {
+    public async exec(msg: Message, rawArgs: string[]): Promise<void> {
         try {
-            const args = new ArgumentParser(msg, rawArgs, this.args).exec();
+            this.#cooldowns.set(getParticipant(msg)!, Date.now());
+            const args = new ArgumentParser(msg, rawArgs, this.args).exec(this as unknown as Command);
             await this.#exec(msg, args);
         } catch (error) {
             if (error instanceof Error) {
+                this.#cooldowns.delete(getParticipant(msg)!);
                 void msg.client.sock?.sendMessage(msg.key.remoteJid!, { text: error.message });
                 msg.client.sock?.logger.error(error);
             }
@@ -78,14 +85,34 @@ export default class Command<Argument extends BuilderExtends[] = []> {
         return this as unknown as Command<[...Argument, ...MapCallBackBuilder<A>]>;
     }
 
-    // eslint-disable-next-line promise/prefer-await-to-callbacks
-    public setExec(callback: (msg: Message, args: Convert<Argument>) => Promise<unknown>): this {
-        this.#exec = callback as unknown as (...args: unknown[]) => Promise<unknown>;
+    public setExec(fn: (msg: Message, args: Convert<Argument>) => Promise<unknown>): this {
+        this.#exec = fn as unknown as (...args: unknown[]) => Promise<unknown>;
         return this;
     }
 
     public setOwnerOnly(value = true): this {
         this.ownerOnly = value;
         return this;
+    }
+
+    public setCooldown(value: number): this {
+        this.cooldown = value;
+        return this;
+    }
+
+    public setSpliter(value: RegExp | string): this {
+        this.spliter = value;
+        return this;
+    }
+
+    public getCooldown(participant: string): number {
+        const since = this.#cooldowns.get(participant) ?? 0;
+        const cooldown = since + this.cooldown;
+        const remain = cooldown - Date.now();
+        if (remain < 1) {
+            this.#cooldowns.delete(participant);
+            return 0;
+        }
+        return remain;
     }
 }

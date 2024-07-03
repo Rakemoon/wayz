@@ -1,21 +1,21 @@
 import type { Convert, BuilderExtends } from "#wayz/lib/structures/ArgumentParserOption";
 import ArgumentResult from "#wayz/lib/structures/ArgumentResult";
 import type { Message } from "#wayz/lib/structures/Command";
+import type Command from "#wayz/lib/structures/Command";
 import type { UnionToTuple } from "#wayz/lib/util/TypeUtility";
 
 export default class ArgumentParser<T extends BuilderExtends[]> {
-    #separator = " ";
     readonly #raw;
     readonly #payload;
     readonly #message;
-    public constructor(msg: Message, raw: string, payload: T) {
+    public constructor(msg: Message, raw: string[], payload: T) {
         this.#raw = raw;
         this.#payload = payload;
         this.#message = msg;
     }
 
-    public exec(): Convert<T extends (infer U)[] ? UnionToTuple<U> : never> {
-        const args = this.#raw.split(this.#separator);
+    public exec(command: Command): Convert<T extends (infer U)[] ? UnionToTuple<U> : never> {
+        const args = command.spliter === " " ? this.#raw : this.#raw.join(" ").split(command.spliter);
         const results: Record<string, unknown> = {};
         for (const payload of this.#payload) {
             if (args.length === 0 && !payload.optional!) throw new Error("ARGS_LESS");
