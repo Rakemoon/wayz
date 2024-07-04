@@ -32,6 +32,12 @@ const commands: LocalizationLibrary["commands"] = {
         commandLanguageSet(lang: string): string {
             return `Bahasa di ubah ke *${lang}*`;
         }
+    },
+    ping: {
+        description: "memastikan apakah bot hidup apa tidak"
+    },
+    hastebin: {
+        description: "mengupload text yang dimasukan ke haste server"
     }
 };
 

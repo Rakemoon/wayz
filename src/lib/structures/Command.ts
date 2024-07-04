@@ -4,9 +4,9 @@ import type { LocalizationLibrary } from "#wayz/lib/components/Localization";
 import { Builder } from "#wayz/lib/structures/ArgumentParserOption";
 import type { BuilderExtends, Convert } from "#wayz/lib/structures/ArgumentParserOption";
 import type Client from "#wayz/lib/structures/Client";
+import CustomError from "#wayz/lib/structures/CustomError";
 import type { UnionToTuple } from "#wayz/lib/util/TypeUtility";
 import { getParticipant } from "#wayz/lib/util/proto";
-import CustomError from "#wayz/lib/structures/CustomError";
 
 export type Message = WAProto.IWebMessageInfo & {
     content: string;
@@ -62,9 +62,7 @@ export default class Command<Argument extends BuilderExtends[] = []> {
             if (error instanceof CustomError) {
                 const text = error.toLocalizeString(msg.localize);
                 void msg.client.sock?.sendMessage(msg.key.remoteJid!, { text });
-            }
-
-            if (error instanceof Error) {
+            } else if (error instanceof Error) {
                 void msg.client.sock?.sendMessage(msg.key.remoteJid!, { text: error.message });
                 msg.client.sock?.logger.error(error);
             }

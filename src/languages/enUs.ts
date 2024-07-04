@@ -31,6 +31,12 @@ const commands = {
         commandLanguageSet(lang: string): string {
             return `Language set to *${lang}*`;
         }
+    },
+    ping: {
+        description: "check the bot if response or not"
+    },
+    hastebin: {
+        description: "paste your text to haste server"
     }
 };
 
