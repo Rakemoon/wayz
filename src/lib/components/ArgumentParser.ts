@@ -5,16 +5,32 @@ import type Command from "#wayz/lib/structures/Command";
 import CustomError from "#wayz/lib/structures/CustomError";
 import type { UnionToTuple } from "#wayz/lib/util/TypeUtility";
 
+/**
+ * Just a simple argument parser nothing special
+ */
 export default class ArgumentParser<T extends BuilderExtends[]> {
     readonly #raw;
     readonly #payload;
     readonly #message;
+
+    /**
+     * To Build Argument Parser instance
+     *
+     * @param msg - the Message
+     * @param raw - the collections of strings raw to be parsed
+     * @param payload - the Payload Builder
+     */
     public constructor(msg: Message, raw: string[], payload: T) {
         this.#raw = raw;
         this.#payload = payload;
         this.#message = msg;
     }
 
+    /**
+     * exec the current parse
+     *
+     * @param command - the command param determine the spliter
+     */
     public exec(command: Command): Convert<T extends (infer U)[] ? UnionToTuple<U> : never> {
         const args = command.spliter === " " ? this.#raw : this.#raw.join(" ").split(command.spliter);
         const results: Record<string, unknown> = {};
