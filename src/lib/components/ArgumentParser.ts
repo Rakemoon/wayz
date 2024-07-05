@@ -2,8 +2,8 @@ import type { Convert, BuilderExtends } from "#wayz/lib/structures/ArgumentParse
 import ArgumentResult from "#wayz/lib/structures/ArgumentResult";
 import type { Message } from "#wayz/lib/structures/Command";
 import type Command from "#wayz/lib/structures/Command";
-import type { UnionToTuple } from "#wayz/lib/util/TypeUtility";
 import CustomError from "#wayz/lib/structures/CustomError";
+import type { UnionToTuple } from "#wayz/lib/util/TypeUtility";
 
 export default class ArgumentParser<T extends BuilderExtends[]> {
     readonly #raw;
