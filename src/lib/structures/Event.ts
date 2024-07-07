@@ -26,7 +26,7 @@ export default class Event<T extends keyof BaileysEventMap> {
      *
      * @param fn - the executed operation
      */
-    public addExec(fn: (client: Client, arg: BaileysEventMap[T]) => void): this {
+    public setExec(fn: (client: Client, arg: BaileysEventMap[T]) => void): this {
         this.exec = fn;
         return this;
     }

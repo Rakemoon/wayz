@@ -2,7 +2,7 @@ import { DisconnectReason } from "@whiskeysockets/baileys";
 import Event from "#wayz/lib/structures/Event";
 
 export default new Event("connection.update")
-    .addExec((client, update) => {
+    .setExec((client, update) => {
         const { connection, lastDisconnect } = update;
         if (connection === "close") {
             const error = lastDisconnect?.error as unknown as {

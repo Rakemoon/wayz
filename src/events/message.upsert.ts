@@ -4,7 +4,7 @@ import Event from "#wayz/lib/structures/Event";
 import { getParticipant, getContentFromMsg, getPrefixes, allowCommandExecuted, allowCommandTranspile } from "#wayz/lib/util/proto";
 
 export default new Event("messages.upsert")
-    .addExec((client, messages) => {
+    .setExec((client, messages) => {
         if (messages.type !== "notify") return;
         for (const msg of messages.messages) {
             if (!allowCommandTranspile(client, msg)) continue;
