@@ -36,7 +36,7 @@ export default class ArgumentParser<T extends BuilderExtends[]> {
         const results: Record<string, unknown> = {};
         for (const payload of this.#payload) {
             if (args.length === 0 && !payload.optional!) {
-                throw new CustomError("ArgsError", "ArgumentLess", {
+                throw new CustomError("ArgsError.Less", {
                     expected: this.#payload.filter(x => !x.optional!).length,
                     found: args.filter(x => x.length > 0).length
                 });
@@ -49,7 +49,7 @@ export default class ArgumentParser<T extends BuilderExtends[]> {
             }
             const result = new ArgumentResult(this.#message, arg.join(" "), payload.type!).exec();
             if (result === undefined && !payload.optional!) {
-                throw new CustomError("ArgsError", "ArgumentLess", {
+                throw new CustomError("ArgsError.Less", {
                     expected: this.#payload.filter(x => !x.optional!).length,
                     found: args.filter(x => x.length > 0).length
                 });

@@ -49,7 +49,7 @@ export default class ArgumentResult<T extends keyof TypeCollection> {
      */
     private parseNumber(): number {
         const result = Number.parseInt(this.#argument, 10);
-        if (Number.isNaN(result)) throw new CustomError("ArgsError", "ArgumentTypeNotMatch", { expected: this.#type });
+        if (Number.isNaN(result)) throw new CustomError("ArgsError.NotMatch", { expected: this.#type });
         return result;
     }
 
@@ -58,7 +58,7 @@ export default class ArgumentResult<T extends keyof TypeCollection> {
      */
     private parseCommand(): Command<BuilderExtends[]> {
         const command = this.#message.client.commandLoader.stores.get(this.#argument);
-        if (!command) throw new CustomError("CollectionError", "NotFound", { from: "Command", where: this.#argument });
+        if (!command) throw new CustomError("CollectionError.NotFound", { from: "Command", where: this.#argument });
         return command;
     }
 }
