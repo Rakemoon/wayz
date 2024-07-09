@@ -38,6 +38,9 @@ const commands: LocalizationLibrary["commands"] = {
     },
     hastebin: {
         description: "mengupload text yang dimasukan ke haste server"
+    },
+    cat: {
+        description: "melihat gambar kucing"
     }
 };
 

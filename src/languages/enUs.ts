@@ -37,6 +37,9 @@ const commands = {
     },
     hastebin: {
         description: "paste your text to haste server"
+    },
+    cat: {
+        description: "return cute cat pictures"
     }
 };
 
