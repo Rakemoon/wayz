@@ -6,9 +6,13 @@ export type NyxsPathRequest = {
             input: string;
             prompt: string;
         };
-        response: {
-            result: string;
+        response: { result: string; };
+    };
+    "into-anime": {
+        payload: {
+            url: string;
         };
+        response: ArrayBuffer;
     };
 };
 
@@ -25,6 +29,7 @@ export default class NyxsApi<Path extends keyof NyxsPathRequest> {
     public async exec(): Promise<NyxsPathRequest[Path]["response"]> {
         switch (this.path) {
             case "ai-character": return this.AiCharacter(this.input.input, this.input.prompt);
+            case "into-anime": return this.IntoAnime(this.input.url);
             default: throw new Error("Not found");
         }
     }
@@ -37,6 +42,15 @@ export default class NyxsApi<Path extends keyof NyxsPathRequest> {
         `;
         const response = await this.fetch(uri);
         return response.json() as Promise<NyxsPathRequest[Path]["response"]>;
+    }
+
+    private async IntoAnime(url: string): Promise<NyxsPathRequest[Path]["response"]> {
+        const uri = oneLineMerge`
+            ai-image/jadianime
+            ?url=${encodeURIComponent(url)}
+        `;
+        const response = await this.fetch(uri);
+        return response.arrayBuffer() as Promise<NyxsPathRequest[Path]["response"]>;
     }
 
     // eslint-disable-next-line no-undef
