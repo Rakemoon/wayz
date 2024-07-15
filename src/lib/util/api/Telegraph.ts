@@ -7,16 +7,29 @@ export type TelegraphPathRequest = {
     };
 };
 
+/**
+ * The TelegraphApi class
+ */
 export default class TelegraphApi<Path extends keyof TelegraphPathRequest> {
     readonly #baseUrl = "https://telegra.ph/";
 
     private readonly path;
     private readonly input;
+
+    /**
+     * Create new TelegraphApi instance
+     *
+     * @param path - the path
+     * @param input - the input
+     */
     public constructor(path: Path, input: TelegraphPathRequest[Path]["payload"]) {
         this.path = path;
         this.input = input;
     }
 
+    /**
+     * Create the request
+     */
     public async exec(): Promise<TelegraphPathRequest[Path]["response"]> {
         switch (this.path) {
             case "upload": return this.upload();
@@ -24,6 +37,10 @@ export default class TelegraphApi<Path extends keyof TelegraphPathRequest> {
         }
     }
 
+    /**
+     * Path for `upload`
+     * Upload image to the Telegraph server
+     */
     private async upload(): Promise<TelegraphPathRequest[Path]["response"]> {
         const payload = this.input as unknown as TelegraphPathRequest["upload"]["payload"];
         const body = new FormData();

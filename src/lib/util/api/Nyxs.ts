@@ -16,16 +16,29 @@ export type NyxsPathRequest = {
     };
 };
 
+/**
+ * The Nyxs Api class
+ */
 export default class NyxsApi<Path extends keyof NyxsPathRequest> {
     readonly #baseUrl = "https://api.nyxs.pw/";
 
     private readonly path;
     private readonly input;
+
+    /**
+     * To create new instance of NyxsApi
+     *
+     * @param path - The path to be used
+     * @param input - The input to be used
+     */
     public constructor(path: Path, input: NyxsPathRequest[Path]["payload"]) {
         this.path = path;
         this.input = input as Record<string, string>;
     }
 
+    /**
+     * Create request based on current path and input
+     */
     public async exec(): Promise<NyxsPathRequest[Path]["response"]> {
         switch (this.path) {
             case "ai-character": return this.AiCharacter(this.input.input, this.input.prompt);
@@ -34,6 +47,13 @@ export default class NyxsApi<Path extends keyof NyxsPathRequest> {
         }
     }
 
+    /**
+     * Path for `ai-character`
+     * chat with ai based on characted yove prompted
+     *
+     * @param input - The input text
+     * @param prompt - The prompt to shape the character
+     */
     private async AiCharacter(input: string, prompt: string): Promise<NyxsPathRequest[Path]["response"]> {
         const uri = oneLineMerge`
             ai/character-ai
@@ -44,6 +64,12 @@ export default class NyxsApi<Path extends keyof NyxsPathRequest> {
         return response.json() as Promise<NyxsPathRequest[Path]["response"]>;
     }
 
+    /**
+     * Path for `into-anime`
+     * animeify your image
+     *
+     * @param url - the url image
+     */
     private async IntoAnime(url: string): Promise<NyxsPathRequest[Path]["response"]> {
         const uri = oneLineMerge`
             ai-image/jadianime
