@@ -11,9 +11,10 @@
  */
 
 import { readFile } from "node:fs/promises";
+import path from "node:path";
 import process from "node:process";
 
-const buffer = await readFile("./.env");
+const buffer = await readFile(path.join(import.meta.dirname, "../../../.env"));
 const envsData = buffer.toString().split("\n");
 for (const raw of envsData) {
     const [env, ...values] = raw.split("=");

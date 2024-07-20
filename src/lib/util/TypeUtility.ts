@@ -47,3 +47,13 @@ export type StrToTupple<S extends string, R extends string[] = []>
 = S extends `${infer F}${infer U}`
     ? StrToTupple<U, [...R, F]>
     : R;
+
+export type StrLen<S extends string, R extends 0[] = []>
+= S extends `${string}${infer Rest}`
+    ? StrLen<Rest, [...R, 0]>
+    : R["length"];
+
+export type DefineUnionNumber<N extends number, R extends number[] = []>
+= N extends R["length"]
+    ? R[number]
+    : DefineUnionNumber<N, [...R, R["length"]]>;
